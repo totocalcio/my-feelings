@@ -1,6 +1,7 @@
 {
   "private": true,
   "scripts": {
+    "clean": "nuxi cleanup",
     "build": "nuxt build",
     "prod": "npm-run-all -p lint:fix fmt build",
     "dev": "nuxt dev",
