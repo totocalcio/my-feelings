@@ -1,7 +1,20 @@
+import { OpenAIStreamPayload } from '../../utils/OpenAIStream'
+import type { Data } from '../../utils/types'
+
+if (!process.env.OPENAI_API_KEY) {
+  throw new Error('OpenAIの環境変数が見つかりませんでした')
+}
+export const config = {
+  runtime: 'edge',
+}
 export default defineEventHandler(async (event) => {
   const { prompt } = await readBody(event)
-
-  const payload = {
+  if (!prompt) {
+    return new Response('リクエストにプロンプトが含まれていません', {
+      status: 400,
+    })
+  }
+  const payload: OpenAIStreamPayload = {
     model: 'text-davinci-003',
     prompt: prompt,
     temperature: 0.7,
@@ -12,15 +25,13 @@ export default defineEventHandler(async (event) => {
     n: 1,
   }
 
-  const response = await fetch('https://api.openai.com/v1/completions', {
+  const res = await $fetch('https://api.openai.com/v1/completions', {
     headers: {
-      'Content-Type': 'application/json',
       Authorization: `Bearer ${process.env.OPENAI_API_KEY ?? ''}`,
     },
     method: 'POST',
-    body: JSON.stringify(payload),
+    body: payload,
   })
 
-  const json = await response.json()
-  return json
+  return res
 })

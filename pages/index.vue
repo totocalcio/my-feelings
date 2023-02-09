@@ -1,57 +1,91 @@
 <script lang="ts" setup>
+import type { Ref } from 'vue'
+import type { Data } from '../utils/types'
+import type { _AsyncData } from 'nuxt/dist/app/composables/asyncData'
+
+const colorMode = useColorMode()
+colorMode.preference = 'winter'
+
 const language = ref('日本語')
 const keyword = ref('')
-const length = ref(200)
+const length = ref(300)
 const feelings = ref('')
 const str = computed(
   () => `
-    ${language.value}で回答して下さい。「${keyword.value}」のキーワードを元に、文章を作成して下さい。文章は${length.value}文字前後にして下さい。随所に次の言葉を使用してください「私は非常にがっかりしました」「腹ただしいです。」「我慢なりません」「改善を求めます」
+    ${language.value}で回答して下さい。「${keyword.value}」のキーワードを元に、文章を作成して下さい。文章は${length.value}文字前後にして下さい。随所に次の言葉を使用してください。「私は非常にがっかりしました」「腹ただしいです。」「我慢なりません」「改善を求めます」。全ての言葉を使用する必要はありません。
     `
 )
-const res = ref('')
+const isLoading = ref(false)
 
-const handleSubmit = async () => {
+const handleSubmit = async (e: any) => {
+  e.preventDefault()
+  isLoading.value = true
+
   const prompt = str.value
-  const { data, error } = await useFetch(`/api/generate`, {
-    method: 'POST',
-    body: JSON.stringify({
-      prompt,
-    }),
-  })
+  const { data, error } = (await useAsyncData(() =>
+    globalThis.$fetch('/api/generate', {
+      method: 'POST',
+      body: {
+        prompt,
+      },
+    })
+  )) as { data: Ref<Data | null>; error?: Ref<Error | null> }
 
-  if (error.value) {
-    throw new Error(error.value.data.message)
+  if (error?.value) {
+    feelings.value =
+      'エラーが発生しました。気持ちを落ち着かせて再度表明して下さい。'
+    console.error(error.value.message)
+    isLoading.value = false
+    return
+  }
+
+  if (!data.value) {
+    feelings.value =
+      '予期せぬエラーが発生しました。後ほど改めてお気持ちを表明して下さい。'
+    isLoading.value = false
+    return
   }
   feelings.value = data.value.choices[0].text
+  isLoading.value = false
 }
 </script>
 
 <template>
-  <div class="artboard artboard-demo h-screen p-10">
-    <h1 class="text-xl">お気持ち表明AI</h1>
-    <div class="flex flex-col gap-3 mt-3">
-      <label>
-        言語
-        <input type="text" class="input input-bordered" v-model="language" />
-      </label>
-      <label class="flex">
-        キーワード
-        <textarea
-          type="text"
-          class="textarea textarea-bordered w-60"
-          v-model="keyword"
-          placeholder=""
-        ></textarea>
-      </label>
-      <label>
-        文字数(目安)
-        <input type="number" class="input input-bordered" v-model="length" />
-      </label>
-      <button type="button" @click="handleSubmit" class="btn">
-        表明してもらう
-      </button>
+  <div class="container">
+    <h1 class="text-xl text-center mb-8">お気持ち表明AI</h1>
+    <div class="row">
+      <label for="language">言語</label>
+      <input
+        id="language"
+        type="text"
+        class="input input-bordered"
+        v-model="language"
+      />
     </div>
+    <div class="row">
+      <label class="flex" for="keyword">キーワード</label>
+      <textarea
+        id="keyword"
+        type="text"
+        class="textarea textarea-bordered"
+        v-model="keyword"
+        placeholder=""
+      ></textarea>
+    </div>
+    <div class="row">
+      <label for="length">文字数(目安)</label>
+      <input
+        id="length"
+        type="number"
+        class="input input-bordered w-32"
+        v-model="length"
+      />
+    </div>
+    <button type="button" @click="handleSubmit" class="btn w-80 button">
+      表明してもらう
+    </button>
     <h2 class="text-lg mt-8">お気持ち表明</h2>
+    <div v-if="isLoading">表明中...</div>
     <div
       class="mt-4 border-solid border-orange-500 border-4 p-5"
       v-show="feelings"
@@ -60,3 +94,42 @@ const handleSubmit = async () => {
     </div>
   </div>
 </template>
+
+<style lang="scss">
+.container {
+  padding: 4rem;
+  margin-inline: auto;
+  width: min(100%, 640px);
+  @media (width <= 460px) {
+    padding: 1em;
+  }
+}
+
+.row {
+  container-type: inline-size;
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  align-items: center;
+  &:not(:last-of-type) {
+    margin-bottom: 1rem;
+  }
+  @media (width <= 640px) {
+    grid-template-columns: 1fr;
+    &:not(:last-of-type) {
+      margin-bottom: 0.5rem;
+    }
+  }
+}
+
+label {
+  @container (width <= 640px) {
+    margin-bottom: 0.5rem;
+  }
+}
+
+.button {
+  display: block;
+  margin-inline: auto;
+  margin-top: 2rem;
+}
+</style>
