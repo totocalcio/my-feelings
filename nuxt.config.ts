@@ -5,4 +5,5 @@ export default defineNuxtConfig({
     dataValue: 'theme',
     classSuffix: '',
   },
+  plugins: [{ src: '~/plugins/vercel.ts', mode: 'client' }],
 })
