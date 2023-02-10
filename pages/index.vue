@@ -22,12 +22,14 @@ const handleSubmit = async (e: any) => {
   isLoading.value = true
 
   const prompt = str.value
-  const { data, error } = await useFetch('/api/generate', {
-    method: 'POST',
-    body: {
-      prompt,
-    },
-  })
+  const { data, error } = (await useAsyncData(() =>
+    globalThis.$fetch('/api/generate', {
+      method: 'POST',
+      body: {
+        prompt,
+      },
+    })
+  )) as { data: Ref<Data | null>; error?: Ref<Error | null> }
 
   if (error?.value) {
     feelings.value =
