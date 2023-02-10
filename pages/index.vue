@@ -84,8 +84,14 @@ const handleSubmit = async (e: any) => {
     <button type="button" @click="handleSubmit" class="btn w-80 button">
       表明してもらう
     </button>
-    <h2 class="text-lg mt-8">お気持ち表明</h2>
-    <div v-if="isLoading">表明中...</div>
+    <div v-if="isLoading">
+      <div class="flex justify-center items-center mt-2">
+        <span class="mr-2">表明中</span>
+        <div class="animate-ping h-1 w-1 bg-blue-600 rounded-full"></div>
+        <div class="animate-ping h-1 w-1 bg-blue-600 rounded-full mx-4"></div>
+        <div class="animate-ping h-1 w-1 bg-blue-600 rounded-full"></div>
+      </div>
+    </div>
     <div
       class="mt-4 border-solid border-orange-500 border-4 p-5"
       v-show="feelings"
