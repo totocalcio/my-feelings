@@ -110,7 +110,7 @@ const handleSubmit = async (e: any) => {
   &:not(:last-of-type) {
     margin-bottom: 1rem;
   }
-  @media (width <= 640px) {
+  @media screen and (max-width: 640px) {
     grid-template-columns: 1fr;
     &:not(:last-of-type) {
       margin-bottom: 0.5rem;
