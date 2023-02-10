@@ -21,7 +21,7 @@ export default defineEventHandler(async (event) => {
     top_p: 1,
     frequency_penalty: 0,
     presence_penalty: 0,
-    max_tokens: 400,
+    max_tokens: 500,
     n: 1,
   }
 

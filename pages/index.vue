@@ -72,15 +72,6 @@ const handleSubmit = async (e: any) => {
         placeholder=""
       ></textarea>
     </div>
-    <div class="row">
-      <label for="length">文字数(目安)</label>
-      <input
-        id="length"
-        type="number"
-        class="input input-bordered w-32"
-        v-model="length"
-      />
-    </div>
     <button type="button" @click="handleSubmit" class="btn w-80 button">
       表明してもらう
     </button>
