@@ -64,13 +64,12 @@ const handleSubmit = async (e: any) => {
     </div>
     <div class="row">
       <label class="flex" for="keyword">キーワード</label>
-      <textarea
+      <input
         id="keyword"
         type="text"
-        class="textarea textarea-bordered"
+        class="input input-bordered"
         v-model="keyword"
-        placeholder=""
-      ></textarea>
+      />
     </div>
     <button type="button" @click="handleSubmit" class="btn w-80 button">
       表明してもらう
@@ -97,9 +96,6 @@ const handleSubmit = async (e: any) => {
   padding: 4rem;
   margin-inline: auto;
   width: min(100%, 640px);
-  @media (width <= 460px) {
-    padding: 1em;
-  }
 }
 
 .row {
@@ -110,23 +106,31 @@ const handleSubmit = async (e: any) => {
   &:not(:last-of-type) {
     margin-bottom: 1rem;
   }
-  @media screen and (max-width: 640px) {
-    grid-template-columns: 1fr;
-    &:not(:last-of-type) {
-      margin-bottom: 0.5rem;
-    }
-  }
-}
-
-label {
-  @container (width <= 640px) {
-    margin-bottom: 0.5rem;
-  }
 }
 
 .button {
   display: block;
   margin-inline: auto;
   margin-top: 2rem;
+}
+@media screen and (max-width: 640px) {
+  .row {
+    grid-template-columns: 1fr;
+    &:not(:last-of-type) {
+      margin-bottom: 0.5rem;
+    }
+  }
+  label {
+    margin-bottom: 0.5rem;
+  }
+}
+@media screen and (max-width: 460px) {
+  .container {
+    padding: 1em;
+  }
+  input {
+    display: block;
+    width: 100%;
+  }
 }
 </style>
